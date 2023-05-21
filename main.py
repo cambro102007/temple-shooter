@@ -49,21 +49,21 @@ class Player2():
         walk_cooldown = 7
         
         key = pygame.key.get_pressed()
-        if key[pygame.K_i] and self.jumped == False and self.grounded == True:
+        if key[pygame.K_i] or key[pygame.K_UP] and self.jumped == False and self.grounded == True:
             self.jumped = True
             self.grounded = False
             self.vel_y =- 17
-        if key[pygame.K_i] == False:
+        if key[pygame.K_i] or key[pygame.K_UP] == False:
             self.jumped = False
-        if key[pygame.K_j]:
+        if key[pygame.K_j] or key[pygame.K_LEFT]:
             dx -= 7
             self.counter += 1
             self.direction = -1
-        if key[pygame.K_l]:
+        if key[pygame.K_l]or key[pygame.K_RIGHT]:
             dx += 7
             self.counter += 1
             self.direction = 1
-        if key[pygame.K_j] == False and key[pygame.K_l] == False:
+        if key[pygame.K_j] == False and key[pygame.K_l] == False and key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
             self.counter = 0
             self.index = 0
             if self.direction == -1:
