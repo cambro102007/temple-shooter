@@ -24,6 +24,7 @@ class Player2():
         self.images_left = []
         self.index = 0
         self.counter = 0
+        self.grounded = False
         
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man2_{num}.png")
@@ -48,9 +49,10 @@ class Player2():
         walk_cooldown = 7
         
         key = pygame.key.get_pressed()
-        if key[pygame.K_i] and self.jumped == False:
-            self.vel_y =- 17
+        if key[pygame.K_i] and self.jumped == False and self.grounded == True:
             self.jumped = True
+            self.grounded = False
+            self.vel_y =- 17
         if key[pygame.K_i] == False:
             self.jumped = False
         if key[pygame.K_j]:
@@ -97,7 +99,7 @@ class Player2():
                     self.rect.bottom = tile[1].top
                     dy = 0
                     self.vel_y = 0
-                    
+                    self.grounded = True
 
         self.rect.x += dx
         self.rect.y += dy
@@ -105,11 +107,9 @@ class Player2():
         if self.rect.bottom > screen_height:
             self.rect.bottom = screen_height
             dy = 0
+            self.grounded = True
         
         screen.blit(self.image, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 1) 
-
-
 
 class Player():
     def __init__(self, x, y):
@@ -117,6 +117,7 @@ class Player():
         self.images_left = []
         self.index = 0
         self.counter = 0
+        self.grounded = False
         
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man_{num}.png")
@@ -142,9 +143,10 @@ class Player():
         
         #KeyStrokes
         key = pygame.key.get_pressed()
-        if key[pygame.K_w] and self.jumped == False:
-            self.vel_y =- 17
+        if key[pygame.K_w] and not self.jumped and self.grounded:
             self.jumped = True
+            self.grounded = False
+            self.vel_y =- 17
         if key[pygame.K_w] == False:
             self.jumped = False
         if key[pygame.K_a]:
@@ -192,19 +194,18 @@ class Player():
                     self.rect.bottom = tile[1].top
                     dy = 0
                     self.vel_y = 0
-                    
+                    self.grounded = True
 
         self.rect.x += dx
         self.rect.y += dy
         
+        
         if self.rect.bottom > screen_height:
             self.rect.bottom = screen_height
             dy = 0
+            self.grounded = True
         
         screen.blit(self.image, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 1) 
-
-
 
 class World():
     def __init__(self, data):
@@ -238,10 +239,9 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             screen.blit(tile[0], tile[1])
-            pygame.draw.rect(screen, (255, 255,255), tile[1], 1)
                 
 world_data = [
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
