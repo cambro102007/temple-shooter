@@ -12,12 +12,14 @@ screen_height = 800
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Temple shooter')
+
 path = os.path.dirname(os.path.abspath(__file__))
-
 BG_img = pygame.image.load(path + "/res/images/temple_BG.png")
+chest_closed_img = pygame.image.load(path + "/res/images/chest_closed.png")
+chest_open_img = pygame.image.load(path + "/res/images/chest_open.png")
+ammo_box_img = pygame.image.load(path + "/res/images/ammo_box.png")
+
 tile_size = 25
-
-
 class Player2():
     def __init__(self, x, y):
         self.images_right = []
@@ -49,7 +51,11 @@ class Player2():
         walk_cooldown = 7
         
         key = pygame.key.get_pressed()
-        if key[pygame.K_i] or key[pygame.K_UP] and self.jumped == False and self.grounded == True:
+        if key[pygame.K_i] and not self.jumped and self.grounded:
+            self.jumped = True
+            self.grounded = False
+            self.vel_y =- 17
+        elif key[pygame.K_UP] and not self.jumped and self.grounded:
             self.jumped = True
             self.grounded = False
             self.vel_y =- 17
@@ -239,6 +245,7 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             screen.blit(tile[0], tile[1])
+             
                 
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
