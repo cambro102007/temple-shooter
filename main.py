@@ -19,6 +19,9 @@ chest_closed_img = pygame.image.load(path + "/res/images/chest_closed.png")
 chest_open_img = pygame.image.load(path + "/res/images/chest_open.png")
 ammo_box_img = pygame.image.load(path + "/res/images/ammo_box.png")
 
+chest_closed_img = pygame.transform.scale(chest_closed_img, (55, 35))
+chest_open_img = pygame.transform.scale(chest_closed_img, (55, 35))
+
 tile_size = 25
 class Player2():
     def __init__(self, x, y):
@@ -204,7 +207,7 @@ class Player():
 
         self.rect.x += dx
         self.rect.y += dy
-        
+    
         
         if self.rect.bottom > screen_height:
             self.rect.bottom = screen_height
@@ -212,7 +215,11 @@ class Player():
             self.grounded = True
         
         screen.blit(self.image, self.rect)
-
+        
+        if self.rect.colliderect(chest.rect):
+            key = pygame.key.get_pressed()
+            if key[pygame.K_b] and not chest.is_open:
+                chest.open()
 class World():
     def __init__(self, data):
         self.tile_list = []
@@ -245,7 +252,26 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             screen.blit(tile[0], tile[1])
-             
+    
+class Chest():
+
+    def __init__(self, x, y, chest_closed_img, chest_open_img):
+        self.closed_image = chest_closed_img
+        self.open_image = chest_open_img
+        self.image = chest_closed_img
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.is_open = False
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def open(self):
+        self.image = self.open_image
+        self.is_open = True
+            
+chest = Chest(965, 614.5, chest_closed_img, chest_open_img)    
+                   
                 
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -287,15 +313,19 @@ player2 = Player2(100, screen_height - 120)
 player = Player(100, screen_height - 120)
 world = World(world_data)
 
+
 run = True
 def main():
     global run
-    while run:
-        
+    while run: 
         clock.tick(fps)
-        
         screen.blit(BG_img, (0, 0))
         
+        key = pygame.key.get_pressed()
+        if key[pygame.K_b] and player.rect.colliderect(chest) and not chest.is_open:
+            chest.open()
+        
+        chest.draw(screen)
         world.draw()
         player.update()
         player2.update()
@@ -303,9 +333,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
-        
+
         pygame.display.update()
-                
     pygame.quit()
 main()
