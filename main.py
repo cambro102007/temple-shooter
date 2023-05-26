@@ -1,3 +1,4 @@
+from typing import Any
 import pygame
 import os
 from pygame.locals import *
@@ -272,7 +273,7 @@ class Player():
                 chest2.open(self)
 
         if shoot:
-            bullet = Bullet(player.rect.centerx, player.rect.centery, player.direction)
+            bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0] * player.direction), player.rect.centery, player.direction)
             bullet_group.add(bullet)
 
 class Bullet(pygame.sprite.Sprite):
@@ -284,6 +285,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.direction = direction
         
+    def update(self):
+        self.rect.x += (self.direction * self.speed)
+        if self.rect.right < 0 or self.rect.left > screen_width:
+            self.kill()
+    
 bullet_group = pygame.sprite.Group()
 
      
@@ -354,7 +360,6 @@ class Chest2():
         self.is_open = True
         self.opened_by = player
 
-    
 chest2 = Chest(185, 614.5, chest_closed_img, chest_open_img)    
                                  
 world_data = [
@@ -406,7 +411,7 @@ def main():
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
         
-        bullet_group.update
+        bullet_group.update()
         bullet_group.draw(screen)
         
         chest2.draw(screen)
