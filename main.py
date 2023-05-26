@@ -19,9 +19,11 @@ chest_closed_img = pygame.image.load(path + "/res/images/chest_closed.png")
 chest_open_img = pygame.image.load(path + "/res/images/chest_open.png")
 ammo_box_img = pygame.image.load(path + "/res/images/ammo_box.png")
 ak47_img = pygame.image.load(path + "/res/images/ak47.png")
+bullet_img = pygame.image.load(path + "/res/images/bullet.png")
 chest_closed_img = pygame.transform.scale(chest_closed_img, (55, 35))
 chest_open_img = pygame.transform.scale(chest_open_img, (55, 35))
 
+shoot = False
 tile_size = 25
 class Player2():
     def __init__(self, x, y):
@@ -177,6 +179,7 @@ class Player():
         self.direction = 0
         
     def update(self):
+        global shoot
         dx= 0
         dy= 0
         walk_cooldown = 7
@@ -200,6 +203,11 @@ class Player():
         if key[pygame.K_a] == False and key[pygame.K_d] == False:
             self.counter = 1
             self.index = 1
+        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
+            if key[pygame.K_SPACE]:
+                shoot = True
+          
+    
         
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
@@ -262,6 +270,23 @@ class Player():
             key = pygame.key.get_pressed()
             if key[pygame.K_b] and not chest2.is_open:
                 chest2.open(self)
+
+        if shoot:
+            bullet = Bullet(player.rect.centerx, player.rect.centery, player.direction)
+            bullet_group.add(bullet)
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self,  x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = bullet_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
+        
+bullet_group = pygame.sprite.Group()
+
+     
 class World():
     def __init__(self, data):
         self.tile_list = []
@@ -329,18 +354,17 @@ class Chest2():
         self.is_open = True
         self.opened_by = player
 
-         
+    
 chest2 = Chest(185, 614.5, chest_closed_img, chest_open_img)    
-                   
-                
+                                 
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
-[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+[1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1],
+[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -377,9 +401,13 @@ world = World(world_data)
 run = True
 def main():
     global run
+    global shoot
     while run: 
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
+        
+        bullet_group.update
+        bullet_group.draw(screen)
         
         chest2.draw(screen)
         chest.draw(screen)
@@ -390,7 +418,9 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    shoot = False
         pygame.display.update()
     pygame.quit()
 main()
