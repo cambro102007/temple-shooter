@@ -60,7 +60,8 @@ class Player2():
         self.vel_y = 0
         self.jumped = False
         self.direction = 0
-        
+        self.health = 100
+
     def update(self):
         global shoot2
         dx= 0
@@ -195,7 +196,7 @@ class Player():
         self.vel_y = 0
         self.jumped = False
         self.direction = 0
-
+        self.health = 100
         
     def update(self):
         global shoot
@@ -311,6 +312,8 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
         if self.rect.colliderect(player2):
             self.kill()
+            player.health -= 15
+            print (player.health)
         for tile in world.tile_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
@@ -331,6 +334,9 @@ class Bullet2(pygame.sprite.Sprite):
             self.kill()
         if self.rect.colliderect(player):
             self.kill()
+            player.health -= 15
+            print (player.health)      
+        
         for tile in world.tile_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
@@ -470,11 +476,16 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            if player.health <= 0:
+                run = False
+            if player2.health <= 0:
+                run = False
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     shoot = False
                 if event.key == pygame.K_m:
                     shoot2 = False
+        
         pygame.display.update()
     pygame.quit()
 main()
