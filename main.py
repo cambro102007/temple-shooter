@@ -287,9 +287,9 @@ class Bullet(pygame.sprite.Sprite):
         
     def update(self):
         self.rect.x += (self.direction * self.speed)
-        if self.rect.right < 0 or self.rect.left > screen_width:
+        if self.rect.right < 0 or self.rect.left > screen_width - 35:
             self.kill()
-    
+
 bullet_group = pygame.sprite.Group()
 
      
