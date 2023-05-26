@@ -298,11 +298,7 @@ class Chest():
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-    def p1_open(self):
-        self.image = self.open_image
-        self.is_open = True
-    
-    def p2_open(self):
+    def open(self):
         self.image = self.open_image
         self.is_open = True
             
