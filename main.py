@@ -19,7 +19,6 @@ chest_closed_img = pygame.image.load(path + "/res/images/chest_closed.png")
 chest_open_img = pygame.image.load(path + "/res/images/chest_open.png")
 ammo_box_img = pygame.image.load(path + "/res/images/ammo_box.png")
 ak47_img = pygame.image.load(path + "/res/images/ak47.png")
-
 chest_closed_img = pygame.transform.scale(chest_closed_img, (55, 35))
 chest_open_img = pygame.transform.scale(chest_open_img, (55, 35))
 
@@ -84,7 +83,8 @@ class Player2():
         if key[pygame.K_j] == False and key[pygame.K_l] == False and key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
             self.counter = 0
             self.index = 0
-        if chest.is_open:
+
+        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
                 self.image = self.images_right_openchest[self.index]
             if self.direction == 1:
@@ -138,7 +138,11 @@ class Player2():
         if self.rect.colliderect(chest.rect):
             key = pygame.key.get_pressed()
             if key[pygame.K_n] and not chest.is_open:
-                chest.open()
+                chest.open(self)
+        if self.rect.colliderect(chest2.rect):
+            key = pygame.key.get_pressed()
+            if key[pygame.K_n] and not chest2.is_open:
+                chest2.open(self)
 
 class Player():
     def __init__(self, x, y):
@@ -197,7 +201,7 @@ class Player():
             self.counter = 1
             self.index = 1
         
-        if chest.is_open:
+        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
                 self.image = self.images_right_openchest[self.index]
             if self.direction == -1:
@@ -253,7 +257,11 @@ class Player():
         if self.rect.colliderect(chest.rect):
             key = pygame.key.get_pressed()
             if key[pygame.K_b] and not chest.is_open:
-                chest.open()
+                chest.open(self)
+        if self.rect.colliderect(chest2.rect):
+            key = pygame.key.get_pressed()
+            if key[pygame.K_b] and not chest2.is_open:
+                chest2.open(self)
 class World():
     def __init__(self, data):
         self.tile_list = []
@@ -298,11 +306,31 @@ class Chest():
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-    def open(self):
+    def open(self, player):
         self.image = self.open_image
         self.is_open = True
-            
-chest = Chest(965, 614.5, chest_closed_img, chest_open_img)    
+        self.opened_by = player 
+chest = Chest(965, 614.5, chest_closed_img, chest_open_img)         
+
+class Chest2():
+    def __init__(self, x, y, chest_closed_img, chest_open_img):
+        self.closed_image = chest_closed_img
+        self.open_image = chest_open_img
+        self.image = chest_closed_img
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.is_open = False
+
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+
+    def open(self, player):
+        self.image = self.open_image
+        self.is_open = True
+        self.opened_by = player
+
+         
+chest2 = Chest(185, 614.5, chest_closed_img, chest_open_img)    
                    
                 
 world_data = [
@@ -353,6 +381,7 @@ def main():
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
         
+        chest2.draw(screen)
         chest.draw(screen)
         world.draw()
         player.update()
