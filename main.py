@@ -25,6 +25,7 @@ chest_closed_img = pygame.transform.scale(chest_closed_img, (55, 35))
 chest_open_img = pygame.transform.scale(chest_open_img, (55, 35))
 
 shoot = False
+shoot2 = False
 tile_size = 25
 class Player2():
     def __init__(self, x, y):
@@ -35,6 +36,8 @@ class Player2():
         self.index = 0
         self.counter = 0
         self.grounded = False
+        self.direction = 0
+        self.shoot2_cooldown = 0
         
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man2_{num}.png")
@@ -60,6 +63,7 @@ class Player2():
         self.direction = 0
         
     def update(self):
+        global shoot2
         dx= 0
         dy= 0
         walk_cooldown = 7
@@ -86,6 +90,10 @@ class Player2():
         if key[pygame.K_j] == False and key[pygame.K_l] == False and key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
             self.counter = 0
             self.index = 0
+        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
+            if key[pygame.K_m]:
+                shoot2 = True
+
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
@@ -147,6 +155,14 @@ class Player2():
             key = pygame.key.get_pressed()
             if key[pygame.K_n] and not chest2.is_open:
                 chest2.open(self)
+
+        if self.shoot2_cooldown > 0:
+            self.shoot2_cooldown -= 1
+        if shoot2:
+            if self.shoot2_cooldown == 0:
+                self.shoot2_cooldown = 8
+                bullet2 = Bullet2(player2.rect.centerx + (0.6 * player2.rect.size[0] * player2.direction), player2.rect.centery, player2.direction)
+                bullet_group2.add(bullet2)
 
 class Player():
     def __init__(self, x, y):
@@ -289,13 +305,27 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direction = direction
+    
+    def update(self):
+        self.rect.x += (self.direction * self.speed)
+        if self.rect.right < 0 or self.rect.left > screen_width - 35:
+            self.kill()
+bullet_group = pygame.sprite.Group()
+
+class Bullet2(pygame.sprite.Sprite):
+    def __init__(self,  x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = bullet_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
         
     def update(self):
         self.rect.x += (self.direction * self.speed)
         if self.rect.right < 0 or self.rect.left > screen_width - 35:
             self.kill()
-
-bullet_group = pygame.sprite.Group()
+bullet_group2 = pygame.sprite.Group()
 
      
 class World():
@@ -412,12 +442,15 @@ run = True
 def main():
     global run
     global shoot
+    global shoot2
     while run: 
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
         
         bullet_group.update()
         bullet_group.draw(screen)
+        bullet_group2.update()
+        bullet_group2.draw(screen)
         
         chest2.draw(screen)
         chest.draw(screen)
@@ -431,6 +464,8 @@ def main():
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     shoot = False
+                if event.key == pygame.K_m:
+                    shoot2 = False
         pygame.display.update()
     pygame.quit()
 main()
