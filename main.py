@@ -131,6 +131,7 @@ class Player2():
         self.rect.x += dx
         self.rect.y += dy
         
+        
         if self.rect.bottom > screen_height:
             self.rect.bottom = screen_height
             dy = 0
@@ -156,6 +157,7 @@ class Player():
         self.index = 0
         self.counter = 0
         self.grounded = False
+        self.shoot_cooldown = 0
         
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man_{num}.png")
@@ -178,6 +180,7 @@ class Player():
         self.vel_y = 0
         self.jumped = False
         self.direction = 0
+
         
     def update(self):
         global shoot
@@ -208,8 +211,6 @@ class Player():
             if key[pygame.K_SPACE]:
                 shoot = True
           
-    
-        
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
                 self.image = self.images_right_openchest[self.index]
@@ -254,7 +255,7 @@ class Player():
 
         self.rect.x += dx
         self.rect.y += dy
-    
+
         
         if self.rect.bottom > screen_height:
             self.rect.bottom = screen_height
@@ -272,9 +273,13 @@ class Player():
             if key[pygame.K_b] and not chest2.is_open:
                 chest2.open(self)
 
+        if self.shoot_cooldown > 0:
+            self.shoot_cooldown -= 1
         if shoot:
-            bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0] * player.direction), player.rect.centery, player.direction)
-            bullet_group.add(bullet)
+            if self.shoot_cooldown == 0:
+                self.shoot_cooldown = 8
+                bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0] * player.direction), player.rect.centery, player.direction)
+                bullet_group.add(bullet)
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,  x, y, direction):
