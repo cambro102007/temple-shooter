@@ -1,4 +1,3 @@
-from typing import Any
 import pygame
 import os
 from pygame.locals import *
@@ -310,6 +309,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x += (self.direction * self.speed)
         if self.rect.right < 0 or self.rect.left > screen_width - 35:
             self.kill()
+        if self.rect.colliderect(player2):
+            self.kill()
+        for tile in world.tile_list:
+            if tile[1].colliderect(self.rect):
+                self.kill()
 bullet_group = pygame.sprite.Group()
 
 class Bullet2(pygame.sprite.Sprite):
@@ -325,6 +329,11 @@ class Bullet2(pygame.sprite.Sprite):
         self.rect.x += (self.direction * self.speed)
         if self.rect.right < 0 or self.rect.left > screen_width - 35:
             self.kill()
+        if self.rect.colliderect(player):
+            self.kill()
+        for tile in world.tile_list:
+            if tile[1].colliderect(self.rect):
+                self.kill()
 bullet_group2 = pygame.sprite.Group()
 
      
