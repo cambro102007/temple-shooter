@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 from pygame.locals import *
 
 pygame.init()
@@ -9,6 +10,7 @@ fps = 60
 
 screen_width = 1200
 screen_height = 800
+
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Temple shooter')
@@ -23,6 +25,7 @@ bullet_img = pygame.image.load(path + "/res/images/bullet.png")
 chest_closed_img = pygame.transform.scale(chest_closed_img, (55, 35))
 chest_open_img = pygame.transform.scale(chest_open_img, (55, 35))
 
+dead = False
 shoot = False
 shoot2 = False
 tile_size = 25
@@ -67,32 +70,32 @@ class Player2():
         dx= 0
         dy= 0
         walk_cooldown = 7
-        
-        key = pygame.key.get_pressed()
-        if key[pygame.K_i] and not self.jumped and self.grounded:
-            self.jumped = True
-            self.grounded = False
-            self.vel_y =- 17
-        elif key[pygame.K_UP] and not self.jumped and self.grounded:
-            self.jumped = True
-            self.grounded = False
-            self.vel_y =- 17
-        if key[pygame.K_i] or key[pygame.K_UP] == False:
-            self.jumped = False
-        if key[pygame.K_j] or key[pygame.K_LEFT]:
-            dx -= 7
-            self.counter += 1
-            self.direction = -1
-        if key[pygame.K_l]or key[pygame.K_RIGHT]:
-            dx += 7
-            self.counter += 1
-            self.direction = 1
-        if key[pygame.K_j] == False and key[pygame.K_l] == False and key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
-            self.counter = 0
-            self.index = 0
-        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
-            if key[pygame.K_m]:
-                shoot2 = True
+        if dead == False:
+            key = pygame.key.get_pressed()
+            if key[pygame.K_i] and not self.jumped and self.grounded:
+                self.jumped = True
+                self.grounded = False
+                self.vel_y =- 17
+            elif key[pygame.K_UP] and not self.jumped and self.grounded:
+                self.jumped = True
+                self.grounded = False
+                self.vel_y =- 17
+            if key[pygame.K_i] or key[pygame.K_UP] == False:
+                self.jumped = False
+            if key[pygame.K_j] or key[pygame.K_LEFT]:
+                dx -= 7
+                self.counter += 1
+                self.direction = -1
+            if key[pygame.K_l]or key[pygame.K_RIGHT]:
+                dx += 7
+                self.counter += 1
+                self.direction = 1
+            if key[pygame.K_j] == False and key[pygame.K_l] == False and key[pygame.K_LEFT] == False and key[pygame.K_RIGHT] == False:
+                self.counter = 0
+                self.index = 0
+            if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
+                if key[pygame.K_m]:
+                    shoot2 = True
 
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
@@ -203,29 +206,29 @@ class Player():
         dx= 0
         dy= 0
         walk_cooldown = 7
-        
-        #KeyStrokes
-        key = pygame.key.get_pressed()
-        if key[pygame.K_w] and not self.jumped and self.grounded:
-            self.jumped = True
-            self.grounded = False
-            self.vel_y =- 17
-        if key[pygame.K_w] == False:
-            self.jumped = False
-        if key[pygame.K_a]:
-            dx -= 7
-            self.counter += 1
-            self.direction = -1
-        if key[pygame.K_d]:
-            dx += 7
-            self.counter += 1
-            self.direction = 1
-        if key[pygame.K_a] == False and key[pygame.K_d] == False:
-            self.counter = 1
-            self.index = 1
-        if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
-            if key[pygame.K_SPACE]:
-                shoot = True
+        if dead == False:
+            #KeyStrokes
+            key = pygame.key.get_pressed()
+            if key[pygame.K_w] and not self.jumped and self.grounded:
+                self.jumped = True
+                self.grounded = False
+                self.vel_y =- 17
+            if key[pygame.K_w] == False:
+                self.jumped = False
+            if key[pygame.K_a]:
+                dx -= 7
+                self.counter += 1
+                self.direction = -1
+            if key[pygame.K_d]:
+                dx += 7
+                self.counter += 1
+                self.direction = 1
+            if key[pygame.K_a] == False and key[pygame.K_d] == False:
+                self.counter = 1
+                self.index = 1
+            if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
+                if key[pygame.K_SPACE]:
+                    shoot = True
           
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
@@ -268,7 +271,7 @@ class Player():
                     dy = 0
                     self.vel_y = 0
                     self.grounded = True
-
+            
         self.rect.x += dx
         self.rect.y += dy
 
@@ -308,12 +311,9 @@ class Bullet(pygame.sprite.Sprite):
     
     def update(self):
         self.rect.x += (self.direction * self.speed)
-        if self.rect.right < 0 or self.rect.left > screen_width - 35:
-            self.kill()
         if self.rect.colliderect(player2):
             self.kill()
-            player.health -= 15
-            print (player.health)
+            player2.health -= 15
         for tile in world.tile_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
@@ -330,19 +330,22 @@ class Bullet2(pygame.sprite.Sprite):
         
     def update(self):
         self.rect.x += (self.direction * self.speed)
-        if self.rect.right < 0 or self.rect.left > screen_width - 35:
-            self.kill()
         if self.rect.colliderect(player):
             self.kill()
-            player.health -= 15
-            print (player.health)      
+            player.health -= 15   
         
         for tile in world.tile_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
 bullet_group2 = pygame.sprite.Group()
 
-     
+teleporter_group = pygame.sprite.Group()
+
+class TeleporterTile(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.rect = pygame.Rect(x, y, tile_size, tile_size)
+
 class World():
     def __init__(self, data):
         self.tile_list = []
@@ -368,12 +371,21 @@ class World():
                     img_rect.y = row_count * tile_size
                     tile = (img, img_rect)
                     self.tile_list.append(tile)
+                if tile == 3:
+                    teleporter = TeleporterTile(col_count * tile_size, row_count * tile_size)
+                    teleporter_group.add(teleporter)
                 col_count += 1
             row_count += 1
                 
     def draw(self):
         for tile in self.tile_list:
             screen.blit(tile[0], tile[1])
+   
+def player_update():
+    teleporter_hit = pygame.sprite.spritecollide(player, teleporter_group, False)
+    if teleporter_hit:
+        next_teleporter = teleporter_group.sprites()[(teleporter_group.sprites().index(teleporter_hit[0]) + 1) % len(teleporter_group.sprites())]
+        player.rect.topleft = next_teleporter.rect.topleft
     
 class Chest():
     def __init__(self, x, y, chest_closed_img, chest_open_img):
@@ -412,6 +424,53 @@ class Chest2():
 
 chest2 = Chest(185, 614.5, chest_closed_img, chest_open_img)    
                                  
+def P1draw_game_over():
+    font = pygame.font.Font(None, 36)
+    font_big = pygame.font.Font(None, 72)
+    text_game_over = font_big.render("Player Two Wins!", True, (255, 255, 255))
+    text_restart = font.render('Press G to Restart', True, (255, 255, 255))
+
+    screen.blit(text_game_over, (screen_width // 2 - text_game_over.get_width() // 2, screen_height // 3 - text_game_over.get_height() // 2))
+    screen.blit(text_restart, (screen_width // 2 - text_restart.get_width() // 2, screen_height * 2 // 3 - text_restart.get_height() // 2))
+
+def P2draw_game_over():
+    font = pygame.font.Font(None, 36)
+    font_big = pygame.font.Font(None, 72)
+    text_game_over = font_big.render('Player One Wins!', True, (255, 255, 255))
+    text_restart = font.render('Press G to Restart', True, (255, 255, 255))
+
+    screen.blit(text_game_over, (screen_width // 2 - text_game_over.get_width() // 2, screen_height // 3 - text_game_over.get_height() // 2))
+    screen.blit(text_restart, (screen_width // 2 - text_restart.get_width() // 2, screen_height * 2 // 3 - text_restart.get_height() // 2))
+
+def initialize_game():
+    global dead, bullet_group, bullet_group2, world, chest, chest2, player, player2
+    dead = False
+    bullet_group = pygame.sprite.Group()
+    bullet_group2 = pygame.sprite.Group()
+    world = World(world_data)
+    chest = Chest(965, 614.5, chest_closed_img, chest_open_img)
+    chest2 = Chest(185, 614.5, chest_closed_img, chest_open_img)
+    player2 = Player2(550, 25)
+    player = Player(650, 25)
+
+def draw_health():
+    font = pygame.font.Font(None, 48)
+    text = font.render(f'Health: {player.health}', True, (0, 0, 0))
+    no_health = font.render('Health: 0', True, (0, 0, 0))
+    
+    if player.health >= 0:
+        screen.blit(text, (25,25))
+    else:
+        screen.blit(no_health, (25, 25))
+        
+    text2 = font.render(f'Health: {player2.health}', True, (0, 0, 0))
+    no_health2 = font.render('Health: 0', True, (0, 0, 0))
+    
+    if player2.health >= 0:
+        screen.blit(text2, (993,25))
+    else:
+        screen.blit(no_health2, (993,25))
+    
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -439,25 +498,21 @@ world_data = [
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+[3, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 3],
+[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
+[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3],
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
 ]
 
-
-player2 = Player2(100, screen_height - 120)
-player = Player(100, screen_height - 120)
+player2 = Player2(550, 25)
+player = Player(650, 25)
 world = World(world_data)
-
 
 run = True
 def main():
-    global run
-    global shoot
-    global shoot2
+    global run, dead, shoot, shoot2
     while run: 
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
@@ -466,25 +521,38 @@ def main():
         bullet_group.draw(screen)
         bullet_group2.update()
         bullet_group2.draw(screen)
-        
+
         chest2.draw(screen)
         chest.draw(screen)
         world.draw()
         player.update()
         player2.update()
+        draw_health()
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-            if player.health <= 0:
-                run = False
-            if player2.health <= 0:
                 run = False
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     shoot = False
                 if event.key == pygame.K_m:
                     shoot2 = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_g and dead:
+                    initialize_game()
+                    dead = False
+
+        if player.health <= 0:
+            dead = True
+            P1draw_game_over()
+        if player2.health <= 0:
+            dead = True
+            P2draw_game_over()
+
+        if not run:
+            pygame.quit()
+            sys.exit() 
+
         
         pygame.display.update()
     pygame.quit()
