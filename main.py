@@ -40,7 +40,8 @@ class Player2():
         self.grounded = False
         self.direction = 0
         self.shoot2_cooldown = 0
-        
+        self.ammo = 50
+
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man2_{num}.png")
             img_right = pygame.transform.scale(img_right, (40, 75))
@@ -96,7 +97,8 @@ class Player2():
             if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
                 if key[pygame.K_m]:
                     shoot2 = True
-
+            if self.ammo == 0:
+                shoot2 = False
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
@@ -166,7 +168,7 @@ class Player2():
                 self.shoot2_cooldown = 8
                 bullet2 = Bullet2(player2.rect.centerx + (0.6 * player2.rect.size[0] * player2.direction), player2.rect.centery, player2.direction)
                 bullet_group2.add(bullet2)
-
+                self.ammo -= 1
 class Player():
     def __init__(self, x, y):
         self.images_right = []
@@ -177,7 +179,8 @@ class Player():
         self.counter = 0
         self.grounded = False
         self.shoot_cooldown = 0
-        
+        self.ammo = 50
+
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man_{num}.png")
             img_right = pygame.transform.scale(img_right, (40, 75))
@@ -216,7 +219,7 @@ class Player():
             if key[pygame.K_w] == False:
                 self.jumped = False
             if key[pygame.K_a]:
-                dx -= 7
+                dx -= 7       
                 self.counter += 1
                 self.direction = -1
             if key[pygame.K_d]:
@@ -229,7 +232,10 @@ class Player():
             if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
                 if key[pygame.K_SPACE]:
                     shoot = True
-          
+            if self.ammo == 0:
+                shoot = False
+
+
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
                 self.image = self.images_right_openchest[self.index]
@@ -299,7 +305,7 @@ class Player():
                 self.shoot_cooldown = 8
                 bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0] * player.direction), player.rect.centery, player.direction)
                 bullet_group.add(bullet)
-
+                self.ammo -= 1
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,  x, y, direction):
         pygame.sprite.Sprite.__init__(self)
@@ -443,8 +449,10 @@ def P2draw_game_over():
     screen.blit(text_restart, (505, 400))
 
 def initialize_game():
-    global dead, bullet_group, bullet_group2, world, chest, chest2, player, player2
+    global dead, bullet_group, bullet_group2, world, chest, chest2, player, player2, shoot, shoot2
     dead = False
+    shoot = False
+    shoot2 = False
     bullet_group = pygame.sprite.Group()
     bullet_group2 = pygame.sprite.Group()
     world = World(world_data)
@@ -454,22 +462,40 @@ def initialize_game():
     player = Player(530, 25)
 
 def draw_health():
-    font = pygame.font.Font(None, 48)
+    font = pygame.font.Font(None, 36)
     text = font.render(f'Health: {player.health}', True, (255,0, 68))
     no_health = font.render('Health: 0', True, (255, 0, 68))
     
     if player.health >= 0:
-        screen.blit(text, (522,680))
+        screen.blit(text, (482,680))
     else:
-        screen.blit(no_health, (522,680))
+        screen.blit(no_health, (482,680))
         
     text2 = font.render(f'Health: {player2.health}', True, (0, 154, 255))
     no_health2 = font.render('Health: 0', True, (0, 154, 255))
     
     if player2.health >= 0:
-        screen.blit(text2, (522,720))
+        screen.blit(text2, (482,720))
     else:
-        screen.blit(no_health2, (522,720))
+        screen.blit(no_health2, (482,720))
+
+def draw_ammo():
+    font = pygame.font.Font(None, 36)
+    text = font.render(f'Ammo: {player.ammo}', True, (255, 0, 68))
+    no_ammo = font.render('Ammo: 0', True, (255, 0, 68))
+    
+    if player.ammo >= 0:
+        screen.blit(text, (625,680))
+    else:
+        screen.blit(no_ammo, (522,680))
+    
+    text = font.render(f'Ammo: {player2.ammo}', True, (0, 154, 255))
+    no_ammo = font.render('Ammo: 0', True, (0, 154, 255))
+    
+    if player2.ammo >= 0:
+        screen.blit(text, (625,720))
+    else:
+        screen.blit(no_ammo, (522,720))
     
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -528,7 +554,9 @@ def main():
         player.update()
         player2.update()
         draw_health()
+        draw_ammo()
         
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
