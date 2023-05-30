@@ -40,7 +40,7 @@ class Player2():
         self.grounded = False
         self.direction = 0
         self.shoot2_cooldown = 0
-        self.ammo = 50
+        self.ammo = 0
 
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man2_{num}.png")
@@ -156,10 +156,13 @@ class Player2():
             key = pygame.key.get_pressed()
             if key[pygame.K_n] and not chest.is_open:
                 chest.open(self)
+                self.ammo += 50
         if self.rect.colliderect(chest2.rect):
             key = pygame.key.get_pressed()
             if key[pygame.K_n] and not chest2.is_open:
                 chest2.open(self)
+                self.ammo += 50
+                
 
         if self.shoot2_cooldown > 0:
             self.shoot2_cooldown -= 1
@@ -179,7 +182,7 @@ class Player():
         self.counter = 0
         self.grounded = False
         self.shoot_cooldown = 0
-        self.ammo = 50
+        self.ammo = 0
 
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man_{num}.png")
@@ -293,11 +296,13 @@ class Player():
             key = pygame.key.get_pressed()
             if key[pygame.K_b] and not chest.is_open:
                 chest.open(self)
+                self.ammo += 50
         if self.rect.colliderect(chest2.rect):
             key = pygame.key.get_pressed()
             if key[pygame.K_b] and not chest2.is_open:
                 chest2.open(self)
-
+                self.ammo += 50
+                
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if shoot:
@@ -409,6 +414,7 @@ class Chest():
         self.image = self.open_image
         self.is_open = True
         self.opened_by = player 
+        
 chest = Chest(965, 598, chest_closed_img, chest_open_img)         
 
 class Chest2():
@@ -427,8 +433,7 @@ class Chest2():
         self.image = self.open_image
         self.is_open = True
         self.opened_by = player
-
-chest2 = Chest(185, 598, chest_closed_img, chest_open_img)    
+chest2 = Chest(185, 598, chest_closed_img, chest_open_img)
                                  
 def P1draw_game_over():
     font = pygame.font.Font(None, 36)
