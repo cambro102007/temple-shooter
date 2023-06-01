@@ -11,7 +11,6 @@ fps = 60
 screen_width = 1200
 screen_height = 800
 
-
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Temple shooter')
 
@@ -28,6 +27,8 @@ chest_open_img = pygame.transform.scale(chest_open_img, (82.5, 52.5))
 dead = False
 shoot = False
 shoot2 = False
+knife = False
+knife2 = False
 tile_size = 25
 class Player2():
     def __init__(self, x, y):
@@ -41,6 +42,7 @@ class Player2():
         self.direction = 0
         self.shoot2_cooldown = 0
         self.ammo = 0
+        self.knife_cooldown = 0
 
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man2_{num}.png")
@@ -67,7 +69,7 @@ class Player2():
         self.health = 100
 
     def update(self):
-        global shoot2
+        global shoot2, knife2
         dx= 0
         dy= 0
         walk_cooldown = 7
@@ -99,6 +101,11 @@ class Player2():
                     shoot2 = True
             if self.ammo == 0:
                 shoot2 = False
+            if self.rect.colliderect(player):
+                if key[pygame.K_COMMA]:
+                    knife2 = True
+            if not self.rect.colliderect(player):
+                knife2 = False
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
@@ -172,6 +179,14 @@ class Player2():
                 bullet2 = Bullet2(player2.rect.centerx + (0.6 * player2.rect.size[0] * player2.direction), player2.rect.centery, player2.direction)
                 bullet_group2.add(bullet2)
                 self.ammo -= 1
+
+        if self.knife_cooldown > 0:
+            self.knife_cooldown -= 1
+        if knife2:
+            if self.knife_cooldown == 0:
+                self.knife_cooldown = 20
+                player2.health -= 10
+
 class Player():
     def __init__(self, x, y):
         self.images_right = []
@@ -183,6 +198,7 @@ class Player():
         self.grounded = False
         self.shoot_cooldown = 0
         self.ammo = 0
+        self.knife_cooldown = 0
 
         for num in range(1, 5):
             img_right = pygame.image.load(path + f"/res/images/man_{num}.png")
@@ -208,7 +224,7 @@ class Player():
         self.health = 100
         
     def update(self):
-        global shoot
+        global shoot, knife
         dx= 0
         dy= 0
         walk_cooldown = 7
@@ -237,7 +253,11 @@ class Player():
                     shoot = True
             if self.ammo == 0:
                 shoot = False
-
+            if self.rect.colliderect(player2):
+                if key[pygame.K_c]:
+                    knife = True
+            if not self.rect.colliderect(player2):
+                knife = False
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
@@ -311,6 +331,14 @@ class Player():
                 bullet = Bullet(player.rect.centerx + (0.6 * player.rect.size[0] * player.direction), player.rect.centery, player.direction)
                 bullet_group.add(bullet)
                 self.ammo -= 1
+
+        if self.knife_cooldown > 0:
+            self.knife_cooldown -= 1
+        if knife:
+            if self.knife_cooldown == 0:
+                self.knife_cooldown = 20
+                player2.health -= 10
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self,  x, y, direction):
         pygame.sprite.Sprite.__init__(self)
@@ -543,7 +571,7 @@ world = World(world_data)
 
 run = True
 def main():
-    global run, dead, shoot, shoot2
+    global run, dead, shoot, shoot2, knife, knife2
     while run: 
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
@@ -556,8 +584,8 @@ def main():
         chest2.draw(screen)
         chest.draw(screen)
         world.draw()
-        player.update()
         player2.update()
+        player.update()
         draw_health()
         draw_ammo()
         
@@ -570,6 +598,11 @@ def main():
                     shoot = False
                 if event.key == pygame.K_m:
                     shoot2 = False
+                if event.key == pygame.K_c:
+                    knife = False
+                if event.key == pygame.K_COMMA:
+                    knife2 = False
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_g and dead:
                     initialize_game()
