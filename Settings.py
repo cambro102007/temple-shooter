@@ -59,32 +59,40 @@ def P2_draw_controls(screen):
 
 def draw_controls(screen):
     font = pygame.font.Font(None, 48)
+    text = font.render('S TO EXIT', True, (255, 0, 0))
+    screen.blit(text, (525, 2))
     text = font.render('CONTROLS', True, BLACK)
-    screen.blit(text, (500, 50))
+    screen.blit(text, (515, 50))
     text = font.render('Move', True, BLACK)
-    screen.blit(text, (550, 175))
+    screen.blit(text, (560, 175))
     text = font.render('Loot', True, BLACK)
-    screen.blit(text, (555, 350))
+    screen.blit(text, (565, 350))
     text = font.render('Shoot', True, BLACK)
-    screen.blit(text, (545, 475))
+    screen.blit(text, (555, 475))
     text = font.render('Restart', True, BLACK)
-    screen.blit(text, (537, 600))  
+    screen.blit(text, (547, 600))  
     text = font.render('Knife', True, BLACK)
-    screen.blit(text, (553, 725))  
+    screen.blit(text, (563, 725))  
 
+back_to_death_screen = False
 run = True
 def settings_main(screen, run):
+    
     while run:
         clock.tick(fps)
         screen.fill(WHITE)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 return run
+            key = pygame.key.get_pressed()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    run = False
 
         P1_draw_controls(screen)
         draw_controls(screen)
         P2_draw_controls(screen)
         pygame.display.update()
-    return run
+    return  back_to_death_screen, run
