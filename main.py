@@ -2,6 +2,7 @@ import pygame
 import os
 import sys
 from pygame.locals import *
+from main_menu import main_menu
 
 pygame.init()
 
@@ -572,7 +573,7 @@ world = World(world_data)
 run = True
 def main():
     global run, dead, shoot, shoot2, knife, knife2
-    while run: 
+    while main_menu() == True: 
         clock.tick(fps)
         screen.blit(BG_img, (0, 0))
         
@@ -592,7 +593,7 @@ def main():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                exit()
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     shoot = False
