@@ -32,7 +32,9 @@ def P1_draw_controls(screen):
     text = font.render('SPACE', True, BLACK)
     screen.blit(text, (190, 475))  
     text = font.render('G', True, BLACK)
-    screen.blit(text, (231, 600))  
+    screen.blit(text, (231, 600))
+    text = font.render('C', True, BLACK)
+    screen.blit(text, (231, 725)) 
 
 def P2_draw_controls(screen):
     font = pygame.font.Font(None, 48)
@@ -51,7 +53,9 @@ def P2_draw_controls(screen):
     text = font.render('M', True, BLACK)
     screen.blit(text, (929, 475))
     text = font.render('G', True, BLACK)
-    screen.blit(text, (929, 600)) 
+    screen.blit(text, (929, 600))
+    text = font.render('C', True, BLACK)
+    screen.blit(text, (929, 725)) 
 
 def draw_controls(screen):
     font = pygame.font.Font(None, 48)
@@ -64,7 +68,9 @@ def draw_controls(screen):
     text = font.render('Shoot', True, BLACK)
     screen.blit(text, (545, 475))
     text = font.render('Restart', True, BLACK)
-    screen.blit(text, (535, 600))  
+    screen.blit(text, (537, 600))  
+    text = font.render('Knife', True, BLACK)
+    screen.blit(text, (553, 725))  
 
 run = True
 def settings_main(screen, run):
@@ -82,9 +88,3 @@ def settings_main(screen, run):
         P2_draw_controls(screen)
         pygame.display.update()
     return run
-
-# Create the screen
-screen = pygame.display.set_mode((screen_width, screen_height))
-
-# Call settings_main function
-settings_main(screen, run)

@@ -9,20 +9,24 @@ path = os.path.dirname(os.path.abspath(__file__))
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-pygame.display.set_caption('Dino Game')
+pygame.display.set_caption('Shrine Of Explosions™')
 screen = pygame.display.set_mode((1200, 800))
 
 manager = pygame_gui.UIManager((1200, 800))
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 72)
 
 
-play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((540, 170), (100, 50)),
+play_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((515, 300), (200, 100)),
                                             text='Play',
                                             manager=manager)
 
-settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((540, 230), (100, 50)),
-                                           text="Shop",
+settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((515, 500), (200, 100)),
+                                           text="Settings",
                                            manager=manager)
+
+def draw_title():
+    text = font.render('Shrine Of Explosions™', True, BLACK)
+    screen.blit(text, (360, 100))
 
 
 clock = pygame.time.Clock()
@@ -51,7 +55,7 @@ def main_menu():
 
         screen.fill(WHITE)
         manager.draw_ui(screen)
-
+        draw_title()
         pygame.display.update()
     
     return run
