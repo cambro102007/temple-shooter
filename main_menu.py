@@ -3,6 +3,7 @@ import pygame_gui
 import os
 from Settings import settings_main
 
+
 pygame.init()
 path = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,15 +26,23 @@ settings_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((515, 5
                                            manager=manager)
 
 def draw_title():
+    font = pygame.font.Font(None, 72)
     text = font.render('Shrine Of Explosions™', True, BLACK)
     screen.blit(text, (360, 100))
 
+def titles():
+    font = pygame.font.Font(None, 48)
+    text = font.render('SPACE OR CLICK', True, BLACK)
+    screen.blit(text, (477, 400))
+    text = font.render('S OR CLICK', True, BLACK)
+    screen.blit(text, (518, 600))
 
 clock = pygame.time.Clock()
 is_running = True
 run = False
 def main_menu():
-    global run, is_running, mute
+    global run, is_running
+    key = pygame.key.get_pressed()
     while is_running:
         time_delta = clock.tick(60)/1000.0
         for event in pygame.event.get():
@@ -47,8 +56,15 @@ def main_menu():
                     
                 if event.ui_element == settings_button:
                     settings_main(screen, True)
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_s:
+                    settings_main(screen, True)
 
-
+                if event.key == pygame.K_SPACE:
+                    run = True
+                    is_running = False
+            
             manager.process_events(event)
         
         manager.update(time_delta)
@@ -56,6 +72,7 @@ def main_menu():
         screen.fill(WHITE)
         manager.draw_ui(screen)
         draw_title()
+        titles()
         pygame.display.update()
     
     return run
