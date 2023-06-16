@@ -2,6 +2,7 @@ import pygame
 import pygame_gui
 import os
 from Settings import settings_main
+from map_menu import map_main
 
 
 pygame.init()
@@ -48,11 +49,11 @@ def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_running = False
+                exit()
             
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 if event.ui_element == play_button:
-                    run = True
-                    is_running = False
+                    map_main(screen, True)
                     
                 if event.ui_element == settings_button:
                     settings_main(screen, True)

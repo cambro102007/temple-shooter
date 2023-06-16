@@ -3,6 +3,7 @@ import os
 import sys
 from pygame.locals import *
 from main_menu import main_menu
+from map_menu import World_1
 
 pygame.init()
 
