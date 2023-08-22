@@ -84,6 +84,7 @@ class Player2():
                 self.jumped = True
                 self.grounded = False
                 self.vel_y =- 17
+                
             if key[pygame.K_i] or key[pygame.K_UP] == False:
                 self.jumped = False
             if key[pygame.K_j] or key[pygame.K_LEFT]:
@@ -107,6 +108,8 @@ class Player2():
                     knife2 = True
             if not self.rect.colliderect(player):
                 knife2 = False
+                if self.jumped == True:
+                    jump_sound()
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
@@ -259,6 +262,9 @@ class Player():
                     knife = True
             if not self.rect.colliderect(player2):
                 knife = False
+
+                if self.jumped == True:
+                    jump_sound()
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
@@ -530,6 +536,11 @@ def draw_ammo():
         screen.blit(text, (625,720))
     else:
         screen.blit(no_ammo, (522,720))
+
+def jump_sound():
+    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.load(path + '/res/sounds/cartoon_jump.mp3')
+    pygame.mixer.music.play(-1)
     
 world_data = [
 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
