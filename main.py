@@ -108,8 +108,6 @@ class Player2():
                     knife2 = True
             if not self.rect.colliderect(player):
                 knife2 = False
-                if self.jumped == True:
-                    jump_sound()
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == -1:
@@ -618,6 +616,9 @@ def main():
                     dead = False
 
                 if event.key == pygame.K_w and player.grounded:
+                    jump_sound()
+                    
+                if event.key == pygame.K_UP and player2.grounded:
                     jump_sound()
 
         if player.health <= 0:
