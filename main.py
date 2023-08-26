@@ -187,7 +187,7 @@ class Player2():
         if knife2:
             if self.knife_cooldown == 0:
                 self.knife_cooldown = 20
-                player2.health -= 10
+                player.health -= 10
 
 class Player():
     def __init__(self, x, y):

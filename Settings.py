@@ -54,8 +54,8 @@ def P2_draw_controls(screen):
     screen.blit(text, (929, 475))
     text = font.render('G', True, BLACK)
     screen.blit(text, (929, 600))
-    text = font.render('C', True, BLACK)
-    screen.blit(text, (929, 725)) 
+    text = font.render('COMMA (,)', True, BLACK)
+    screen.blit(text, (870, 725)) 
 
 def draw_controls(screen):
     font = pygame.font.Font(None, 48)
