@@ -83,10 +83,12 @@ class Player():
             self.player = player
             self.opposite_player = player2
             self.shot_id = shoot
+            self.knife_id = knife
         else:
             self.player = player2
             self.opposite_player = player
             self.shot_id = shoot2
+            self.knife_id = knife2
         dx= 0
         dy= 0
         walk_cooldown = 7
@@ -117,9 +119,9 @@ class Player():
                 self.shot_id = False
             if self.rect.colliderect(self.opposite_player):
                 if key[self.knife]:
-                    knife = True
+                    self.knife_id = True
             if not self.rect.colliderect(self.opposite_player):
-                knife = False
+                self.knife_id = False
 
         if (chest.is_open and chest.opened_by == self) or (chest2.is_open and chest2.opened_by == self):
             if self.direction == 1:
@@ -199,7 +201,7 @@ class Player():
 
         if self.knife_cooldown > 0:
             self.knife_cooldown -= 1
-        if knife:
+        if self.knife_id:
             if self.knife_cooldown == 0:
                 self.knife_cooldown = 20
                 self.opposite_player.health -= 10
