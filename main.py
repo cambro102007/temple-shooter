@@ -192,10 +192,7 @@ class Player():
         if self.shot_id:
             if self.shoot_cooldown == 0:
                 self.shoot_cooldown = 8
-                if self.player_type == 1:
-                    bullet = Bullet(self.player.rect.centerx + (0.6 * self.player.rect.size[0] * self.player.direction), self.player.rect.centery, self.player.direction)
-                else:
-                    bullet = Bullet2(self.player.rect.centerx + (0.6 * self.player.rect.size[0] * self.player.direction), self.player.rect.centery, self.player.direction)
+                bullet = Bullet(self.player.rect.centerx + (0.6 * self.player.rect.size[0] * self.player.direction), self.player.rect.centery, self.player.direction, self.opposite_player)
                 bullet_group.add(bullet)
                 self.ammo -= 1
 
@@ -207,43 +204,24 @@ class Player():
                 self.opposite_player.health -= 10
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self,  x, y, direction):
+    def __init__(self,  x, y, direction, opposite_player):
         pygame.sprite.Sprite.__init__(self)
         self.speed = 10
         self.image = bullet_img
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direction = direction
+        self.opposite_player = opposite_player
     
     def update(self):
         self.rect.x += (self.direction * self.speed)
-        if self.rect.colliderect(player2):
+        if self.rect.colliderect(self.opposite_player):
             self.kill()
-            player2.health -= 15
+            self.opposite_player.health -= 15
         for tile in world.tile_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
 bullet_group = pygame.sprite.Group()
-
-class Bullet2(pygame.sprite.Sprite):
-    def __init__(self,  x, y, direction):
-        pygame.sprite.Sprite.__init__(self)
-        self.speed = 10
-        self.image = bullet_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.direction = direction
-        
-    def update(self):
-        self.rect.x += (self.direction * self.speed)
-        if self.rect.colliderect(player):
-            self.kill()
-            player.health -= 15   
-        
-        for tile in world.tile_list:
-            if tile[1].colliderect(self.rect):
-                self.kill()
-bullet_group2 = pygame.sprite.Group()
 
 teleporter_group = pygame.sprite.Group()
 
@@ -349,12 +327,11 @@ def P2draw_game_over():
     screen.blit(text_restart, (505, 400))
 
 def initialize_game():
-    global dead, bullet_group, bullet_group2, world, chest, chest2, player, player2, shoot, shoot2
+    global dead, bullet_group, world, chest, chest2, player, player2, shoot, shoot2
     dead = False
     shoot = False
     shoot2 = False
     bullet_group = pygame.sprite.Group()
-    bullet_group2 = pygame.sprite.Group()
     world = World(world_data)
     chest = Chest(965, 598, chest_closed_img, chest_open_img)
     chest2 = Chest(185, 598, chest_closed_img, chest_open_img)
@@ -478,8 +455,6 @@ def main():
         
         bullet_group.update()
         bullet_group.draw(screen)
-        bullet_group2.update()
-        bullet_group2.draw(screen)
 
         chest2.draw(screen)
         chest.draw(screen)
