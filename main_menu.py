@@ -6,6 +6,7 @@ from Settings import settings_main
 
 pygame.init()
 path = os.path.dirname(os.path.abspath(__file__))
+main_menu_BG = pygame.image.load(path + "/res/images/main_menu_bg.png")
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -69,7 +70,7 @@ def main_menu():
         
         manager.update(time_delta)
 
-        screen.fill(WHITE)
+        screen.blit(main_menu_BG, (-200, -75))
         manager.draw_ui(screen)
         draw_title()
         titles()
