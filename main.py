@@ -289,23 +289,6 @@ class Chest():
         self.opened_by = player 
         
 chest = Chest(965, 598, chest_closed_img, chest_open_img)         
-
-class Chest2():
-    def __init__(self, x, y, chest_closed_img, chest_open_img):
-        self.closed_image = chest_closed_img
-        self.open_image = chest_open_img
-        self.image = chest_closed_img
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        self.is_open = False
-
-    def draw(self, surface):
-        surface.blit(self.image, self.rect)
-
-    def open(self, player):
-        self.image = self.open_image
-        self.is_open = True
-        self.opened_by = player
 chest2 = Chest(185, 598, chest_closed_img, chest_open_img)
                                  
 def P1draw_game_over():
